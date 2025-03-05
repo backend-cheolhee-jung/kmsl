@@ -1,6 +1,9 @@
 package com.kmsl.dsl.extension
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.kmsl.dsl.clazz.*
 import com.kmsl.dsl.clazz.FieldName.ID
 import com.kmsl.dsl.clazz.FieldName._ID
@@ -17,7 +20,16 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.findAnnotations
 
-val mapper = ObjectMapper()
+val mapper = ObjectMapper().apply {
+    registerKotlinModule()
+    registerModule(JavaTimeModule())
+    configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true)
+    configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
+    configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true)
+    configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true)
+    configure(DeserializationFeature.EAGER_DESERIALIZER_FETCH, true)
+}
 
 fun <T : Any> MongoTemplate.findOne(
     query: BasicQuery,
