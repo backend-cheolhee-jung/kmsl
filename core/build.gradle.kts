@@ -8,6 +8,7 @@ plugins {
 }
 
 dependencies {
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     compileOnly("org.springframework.boot:spring-boot-starter-data-mongodb:3.3.4")
     compileOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
     compileOnly("org.jetbrains.kotlin:kotlin-reflect")
