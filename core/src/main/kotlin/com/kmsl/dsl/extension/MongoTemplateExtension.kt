@@ -10,6 +10,7 @@ import com.kmsl.dsl.clazz.FieldName._ID
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.aggregation.*
 import org.springframework.data.mongodb.core.mapping.Document
@@ -34,14 +35,16 @@ fun <T : Any> MongoTemplate.findOne(
     entityClass: KClass<T>,
 ) = findOne(query, entityClass.java)
 
-fun <T : Any> MongoTemplate.find(
+fun <T : Any> MongoTemplate.findAll(
     query: BasicQuery,
-    pageable: Pageable,
     entityClass: KClass<T>,
+    limit: Int,
+    skip: Long,
+    sort: Sort,
 ): List<T> = find(
-    query.limit(pageable.pageSize)
-        .skip(pageable.offset)
-        .with(pageable.sort),
+    query.limit(limit)
+        .skip(skip)
+        .with(sort),
     entityClass.java,
 )
 
@@ -52,8 +55,8 @@ fun <T : Any> MongoTemplate.find(
 
 fun <T : Any> MongoTemplate.findAll(
     query: BasicQuery,
-    pageable: Pageable,
     entityClass: KClass<T>,
+    pageable: Pageable,
 ): Page<T> {
     val pagedQuery = query.limit(pageable.pageSize)
         .skip(pageable.offset)
