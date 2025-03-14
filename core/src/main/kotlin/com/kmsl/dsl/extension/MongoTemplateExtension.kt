@@ -57,10 +57,15 @@ fun <T : Any> MongoTemplate.findAll(
     pageable: Pageable,
     entityClass: KClass<T>,
 ): Page<T> {
+    val pagedQuery = query.limit(pageable.pageSize)
+        .skip(pageable.offset)
+        .with(pageable.sort)
+
     val data = find(
-        query.limit(pageable.pageSize).skip(pageable.offset).with(pageable.sort),
+        pagedQuery,
         entityClass.java,
     )
+
     val count = count(query, entityClass.java)
     return PageImpl(data, pageable, count)
 }
