@@ -7,14 +7,12 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.kmsl.dsl.clazz.*
 import com.kmsl.dsl.clazz.FieldName.ID
 import com.kmsl.dsl.clazz.FieldName._ID
-import org.springframework.data.annotation.Id
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.aggregation.*
 import org.springframework.data.mongodb.core.mapping.Document
-import org.springframework.data.mongodb.core.mapping.Field
 import org.springframework.data.mongodb.core.query.BasicQuery
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
@@ -556,13 +554,3 @@ fun <T : Any> MongoTemplate.deleteAll(
         query,
         entityClass.java,
     )
-
-val KClass<*>.fieldName
-    get() = this.java.declaredFields.first {
-        it.isAnnotationPresent(Id::class.java) or it.hasJakartaIdAnnotation()
-    }?.run {
-        isAccessible = true
-        val hasFieldAnnotation = annotations.any { it is Field }
-        if (hasFieldAnnotation) annotations.filterIsInstance<Field>().first().value
-        else _ID
-    } ?: this.simpleName!!
